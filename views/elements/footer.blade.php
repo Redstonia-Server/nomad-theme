@@ -35,7 +35,7 @@
                 <div class="col-md-6">
                     <div class="copyright-wrapper">
                         <p class="copyright-main">{{ setting('copyright') }}</p>
-                        <p class="copyright-sub">@lang('messages.copyright') {{ trans('theme::nomad.footer.developed_by') }} <a href="https://discord.wiregency.com/" class="footer-author">WireGency</a></p>
+                        <p class="copyright-sub">@lang('messages.copyright')</p>
                     </div>
                 </div>
                 <div class="col-md-6 text-md-end">
