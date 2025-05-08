@@ -3,7 +3,7 @@
 @section('title', trans('messages.home'))
 
 @section('app')
-    @if (!$posts->isEmpty())
+    @if ($posts->isNotEmpty())
         <section class="blog-section">
             <div class="container">
                 <div class="text-center mb-5">
@@ -16,14 +16,13 @@
                             <a href="{{ route('posts.show', $post->slug) }}" class="blog-card-link">
                                 <div class="blog-card">
                                     @if ($post->hasImage())
-                                        <img src="{{ $post->imageUrl() }}" alt="{{ $post->title }}" class="blog-image">
+                                        <img src="{{ $post->imageUrl() }}" alt="{{ e($post->title) }}" class="blog-image">
                                     @endif
                                     <div class="blog-content">
                                         <h3 class="blog-title">{{ $post->title }}</h3>
                                         <div class="blog-meta">
-                                            <span
-                                            class="blog-date">{{ format_date($post->created_at) }}</span>
-                                            </div>
+                                            <span class="blog-date">{{ format_date($post->created_at) }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </a>
@@ -31,33 +30,31 @@
                     @endforeach
                 </div>
                 <div class="text-center mt-4">
-                    <a href="{{ route('posts.index') }}"
-                        class="btn btn-primary">{{ trans('theme::nomad.home.blog.more') }}</a>
+                    <a href="{{ route('posts.index') }}" class="btn btn-primary">
+                        {{ trans('theme::nomad.home.blog.more') }}
+                    </a>
                 </div>
             </div>
         </section>
     @endif
 
-    <section class="about-section @if ($posts->isEmpty()) pt-5 mt-4 @endif">
+    <section class="about-section {{ $posts->isEmpty() ? 'pt-5 mt-4' : '' }}">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-5">
                     <img src="{{ theme_config('about_image') ? image_url(theme_config('about_image')) : theme_asset('img/steve.webp') }}"
-                        alt="About Image" class="about-image">
+                         alt="Image à propos" class="about-image">
                 </div>
                 <div class="col-lg-7">
                     <div class="about-content">
-                        <h1 class="section-title">
-                            {{ theme_config('about_title') }}
-                        </h1>
-                        <p class="description">
-                            {!! theme_config('about_description') !!}
-                        </p>
+                        <h1 class="section-title">{{ theme_config('about_title') }}</h1>
+                        <p class="description">{!! theme_config('about_description') !!}</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
     <section class="cta-section">
         <div class="container">
             <div class="cta-wrapper">
@@ -65,16 +62,16 @@
                     <div class="col-lg-8 text-center">
                         <h2 class="cta-title">{{ theme_config('cta_title') }}</h2>
                         <p class="cta-description">{{ theme_config('cta_description') }}</p>
-                        @if(theme_config('cta_button_type', 'server') === 'server')
-                            @if (!$servers->isEmpty())
-                                @foreach ($servers as $server)
-                                    <button class="btn btn-primary cta-button server-ip"
+                        @if (theme_config('cta_button_type', 'server') === 'server')
+                            @forelse ($servers as $server)
+                                <button class="btn btn-primary cta-button server-ip"
                                         data-clipboard-text="{{ $server->fullAddress() }}"
                                         data-copy-message="{{ trans('theme::nomad.home.ip') }}">
-                                        {{ $server->fullAddress() }}
-                                    </button>
-                                @endforeach
-                            @endif
+                                    {{ $server->fullAddress() }}
+                                </button>
+                            @empty
+                                <p>{{ trans('theme::nomad.home.no_servers') }}</p>
+                            @endforelse
                         @else
                             <a href="{{ theme_config('cta_button_link') }}" class="btn btn-primary cta-button">
                                 {{ theme_config('cta_button_text') }}
@@ -85,6 +82,7 @@
             </div>
         </div>
     </section>
+
     <section class="stats-section">
         <div class="container">
             <div class="row">
@@ -94,11 +92,7 @@
                             <i class="{{ theme_config('stats_icon_1') }}"></i>
                         </div>
                         <div class="stats-value">
-                            @if (!$servers->isEmpty())
-                                {{ $server->getOnlinePlayers() }}
-                            @else
-                                0
-                            @endif
+                            {{ !$servers->isEmpty() ? $server->getOnlinePlayers() : 0 }}
                         </div>
                         <div class="stats-label">{{ theme_config('online_players_label') }}</div>
                     </div>
@@ -119,7 +113,9 @@
                         <div class="stats-icon">
                             <i class="{{ theme_config('stats_icon_3') }}"></i>
                         </div>
-                        <div class="stats-value">{{ theme_config('record_players', 0) }}</div>
+                        <div class="stats-value">
+                            {{ theme_config('record_players', 0) }}
+                        </div>
                         <div class="stats-label">{{ theme_config('record_players_label') }}</div>
                     </div>
                 </div>
